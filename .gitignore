@@ -1,0 +1,11 @@
+build
+*.o
+data/drawed_images
+data/videos
+data/test_images/yolov3/jpg.bangongshi
+svp/ive/build/
+*.yvu
+*.yuv
+.vscode
+data/log
+data/test_images
