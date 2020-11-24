@@ -74,6 +74,7 @@ int YoloCls::detectHiVIDEO_FRAME(VIDEO_FRAME_INFO_S *pstVFrame, std::vector<nnie
     if(pstVFrame->stVFrame.u32Width != m_iImageWidth || pstVFrame->stVFrame.u32Height != m_iImageHeight){
         cerr<<"input image size error"<<pstVFrame->stVFrame.u32Width<<"!="<<m_iImageWidth \
                 <<","<< pstVFrame->stVFrame.u32Height<<"!="<<m_iImageHeight<<endl;
+        return -1;
     }
 	struct timeval tv1;
 	struct timeval tv2;
@@ -82,7 +83,8 @@ int YoloCls::detectHiVIDEO_FRAME(VIDEO_FRAME_INFO_S *pstVFrame, std::vector<nnie
 	    gettimeofday(&tv1, NULL);
     }
     cout<<"net.run"<<endl;
-	net.run((unsigned char*)(pstVFrame->stVFrame.u64VirAddr[0]));
+	net.run((unsigned char*)(pstVFrame->stVFrame.u64VirAddr[0]), 3 \
+                , pstVFrame->stVFrame.u32Width, pstVFrame->stVFrame.u32Height);
     if(m_bDebug){
         gettimeofday(&tv2, NULL);
         t1 = tv2.tv_sec - tv1.tv_sec;

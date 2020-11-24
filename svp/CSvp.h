@@ -24,13 +24,6 @@ public:
             shared_ptr<YoloCls> pDetector = make_shared<YoloCls>(argst, smpath);
             pDetector->m_bDebug=m_bDebug;
             shared_ptr<AI_DETECT_ARGS_ST> pArg = make_shared<AI_DETECT_ARGS_ST>(argst);
-            //m_mapModelArgs.emplace(sModelName, make_shared<AI_DETECT_ARGS_ST>(argst));
-            //make_pair("yolov3", pDetector)
-            // vector<float> vConfThresh(argst.class_thresh, argst.class_thresh+argst.class_num);
-            // pDetector->init(smpath, vConfThresh, argst.do_nms, argst.nms_thresh);
-            //cout<<"18 "<<m_mapTest.size()<< endl;
-            //m_mapTest.insert(make_pair(1,2));
-            //m_mapInferor.insert();  <shared_ptr<AI_DETECT_ARGS_ST>, shared_ptr<YoloCls> >
             m_mapInferor.emplace(string("yolov3"), make_pair(pArg, pDetector));
             cout<<"20 "<<endl;
             //--------------后面替换----------------------
@@ -43,16 +36,16 @@ public:
             cout<<"模型"<<sModelName<<"未初始化"<<endl;
             return 103;
         }
-
+        shared_ptr<AI_DETECT_ARGS_ST> pArgs = m_mapInferor[sModelName].first;
         std::vector<nnie::objInfo> res;
         int imageW = pstVFrame->stVFrame.u32Width;
         int imageH = pstVFrame->stVFrame.u32Height;
         if (sModelName == "yolov3"){
             cout<<"40,"<<endl;
             VIDEO_FRAME_INFO_S *pstVFYolo;
-            if(imageW != 416 || imageH != 416){
+            if(imageW != pArgs->image_width || imageH != pArgs->image_height){
                 if(!m_bCreatedYoloResizeChn){
-                    AI_VPSS_CreateChannel_AP(m_chYoloResize, AI_VENC_CHN_MAX_WIDTH, AI_VENC_CHN_MAX_HEIGHT, 416, 416, &m_vpYoloResize, ASPECT_RATIO_NONE);//resize
+                    AI_VPSS_CreateChannel_AP(m_chYoloResize, AI_VENC_CHN_MAX_WIDTH, AI_VENC_CHN_MAX_HEIGHT, pArgs->image_width, pArgs->image_height, &m_vpYoloResize, ASPECT_RATIO_NONE);//resize
                     m_bCreatedYoloResizeChn = true;
                 }
                 cout<<"send52"<<endl;
@@ -81,30 +74,37 @@ public:
             pstVFYolo->stVFrame.u32Stride[0] = pstVFYolo->stVFrame.u32Stride[0];
             pstVFYolo->stVFrame.u32Stride[1] = pstVFYolo->stVFrame.u32Stride[1];
             pstVFYolo->stVFrame.u32Stride[2] = pstVFYolo->stVFrame.u32Stride[2];
-            pstVFYolo->stVFrame.u32Width = 416;
-            pstVFYolo->stVFrame.u32Height = 416;
 
             cout<<"detect78 "<<endl;
             shared_ptr<YoloCls> pDetector = static_pointer_cast<YoloCls>(m_mapInferor[sModelName].second);
             pDetector->detectHiVIDEO_FRAME(pstVFYolo, res);
+            for(auto oi:res){
+                ST_BOX box;
+                box.clss_id = oi.cls_id;
+                box.conf = oi.confidence;
+                box.x = oi.box.x;
+                box.y = oi.box.y;
+                box.w = oi.box.width;
+                box.h = oi.box.height;
+                boxes.push_back(box);
+            }
             if(m_bDebug){
                 cv::Mat mBGR;
-                cv::Mat mYVU0(416*3/2, 416, CV_8UC1, (unsigned char *)pVirAddrYolo);
+                cv::Mat mYVU0(pArgs->image_width*3/2, pArgs->image_height, CV_8UC1, (unsigned char *)pVirAddrYolo);
                 cv::cvtColor(mYVU0, mBGR, CV_YUV420sp2BGR, 3);
                 for(auto oi:res){
                     int cid = oi.cls_id;
                     cv::Rect2d box = oi.box;
-                    box.x *= 416;
-                    box.y *= 416;
-                    box.width *= 416;
-                    box.height *= 416;
+                    box.x *= pArgs->image_width;
+                    box.y *= pArgs->image_height;
+                    box.width *= pArgs->image_width;
+                    box.height *= pArgs->image_height;
                     cv::rectangle(mBGR, box, cv::Scalar(255, 255, 255));
                     ostringstream oss;
                     oss<<cid<<","<<oi.confidence;
                     int x = box.x;
                     int y = box.y;
                     cv::putText(mBGR, oss.str(), cv::Point2d(x, y), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0,0,255), 2);
-                    
                 }
                 ostringstream ossfn;
                 ossfn<<m_sDrawDir<<"yolo_"<<m_nFrame<<".jpg"<<endl;
@@ -113,12 +113,10 @@ public:
             }
 
             HI_MPI_SYS_Munmap((void *)pstVFYolo->stVFrame.u64VirAddr[0], u32SizeYolo);
-            if(imageW != 416 || imageH != 416){
+            if(imageW != pArgs->image_width || imageH != pArgs->image_height){
                 HI_MPI_VPSS_ReleaseChnFrame(m_chYoloResize, 0, pstVFYolo);
                 free(pstVFYolo);
             }
-            
-
         }
     }
     bool m_bDebug=true;
@@ -132,7 +130,5 @@ private:
     map<string, pair<shared_ptr<AI_DETECT_ARGS_ST>, shared_ptr<void> > > m_mapInferor;
     //map<string, shared_ptr<AI_DETECT_ARGS_ST>> m_mapModelArgs;
     map<int, int> m_mapTest;
-    // shared_ptr m_pClassifier;
-    // shared_ptr m_pDetector;
 
 };

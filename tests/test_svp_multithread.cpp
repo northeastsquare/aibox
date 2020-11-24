@@ -600,7 +600,7 @@ void test_kitchen_interface()
 
         // AI_DETECT_ARGS_ST argst{.image_width=1920, .image_width=1080, .class_num=80, .do_nms=0, .nms_thresh=0.5, \
         //                         .conf_thresh=0.1, .data_dir="/mnt/mtd/nfs/zhangjianwei/aibox/data", .model_name="yolov3"};
-        AI_DETECT_ARGS_ST argst{1920, 1080, 80, 0, 0.5, 0.1, "/mnt/mtd/nfs/zhangjianwei/aibox/data", "yolov3"};
+        AI_DETECT_ARGS_ST argst{416, 416, 80, 1, 0.5, 0.1, "/mnt/mtd/nfs/zhangjianwei/aibox/data", "yolov3"};
         ai_model_init(argst);
     }else{
     }

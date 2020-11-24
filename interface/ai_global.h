@@ -27,7 +27,7 @@ typedef struct BOX
 {
     int clss_id;
     float conf;
-    int x,y,w,h;
+    float x,y,w,h;
 } ST_BOX;
 
 

@@ -71,8 +71,8 @@ namespace nnie
 
     public:
         void run(const char *file_path);
-
         void run(const unsigned char *data);
+        void run(const unsigned char *data, int chn, int width, int height);
 
         void finish();
 

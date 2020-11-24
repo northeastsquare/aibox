@@ -77,6 +77,19 @@ namespace nnie
         free(data);
     }
 
+    void Net::run(const unsigned char *data, int chn, int width, int height)
+    {
+        unsigned int u32Height = s_stNnieParam_.astSegData[0].astSrc[0].unShape.stWhc.u32Height;
+        unsigned int u32Width = s_stNnieParam_.astSegData[0].astSrc[0].unShape.stWhc.u32Width;
+        unsigned int u32Chn = s_stNnieParam_.astSegData[0].astSrc[0].unShape.stWhc.u32Chn;
+        //printf("image size err. chn: %d, %u;width: %d, %u;height: %d, %u.\n", chn, u32Chn, width, u32Width, height, u32Height);
+        if (width != u32Width || height != u32Height || chn != u32Chn){
+            printf("image size err. chn: %d, %u;width: %d, %u;height: %d, %u.\n", chn, u32Chn, width, u32Width, height, u32Height);
+            return;
+        }
+        NNIE_Forward_From_Data(data, &s_stModel_, &s_stNnieParam_, output_tensors_);
+    }
+
     void Net::run(const unsigned char *data)
     {
         NNIE_Forward_From_Data(data, &s_stModel_, &s_stNnieParam_, output_tensors_);

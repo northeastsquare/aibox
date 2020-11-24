@@ -120,6 +120,9 @@ static HI_S32 SAMPLE_SVP_NNIE_FillForwardInfo(SAMPLE_SVP_NNIE_CFG_S *pstNnieCfg,
     	        pstNnieParam->astSegData[i].astSrc[j].unShape.stWhc.u32Height = pstNnieParam->pstModel->astSeg[i].astSrcNode[j].unShape.stWhc.u32Height;
     	        pstNnieParam->astSegData[i].astSrc[j].unShape.stWhc.u32Width = pstNnieParam->pstModel->astSeg[i].astSrcNode[j].unShape.stWhc.u32Width;
     	        pstNnieParam->astSegData[i].astSrc[j].u32Num = pstNnieCfg->u32MaxInputNum;
+				printf("astSrc i:%d, j:%d, ch:%d, h:%d, w:%d \n", i, j, pstNnieParam->astSegData[i].astSrc[j].unShape.stWhc.u32Chn \
+						, pstNnieParam->astSegData[i].astSrc[j].unShape.stWhc.u32Height
+						, pstNnieParam->astSegData[i].astSrc[j].unShape.stWhc.u32Width);
             }
 	    }
 
@@ -151,6 +154,11 @@ static HI_S32 SAMPLE_SVP_NNIE_FillForwardInfo(SAMPLE_SVP_NNIE_CFG_S *pstNnieCfg,
     		    pstNnieParam->astSegData[i].astDst[j].unShape.stWhc.u32Height = pstNnieParam->pstModel->astSeg[i].astDstNode[j].unShape.stWhc.u32Height;
     		    pstNnieParam->astSegData[i].astDst[j].unShape.stWhc.u32Width = pstNnieParam->pstModel->astSeg[i].astDstNode[j].unShape.stWhc.u32Width;
     		    pstNnieParam->astSegData[i].astDst[j].u32Num = u32Num;
+				
+				printf("astDst: i:%d, j:%d, ch:%d, h:%d, w:%d \n", i, j, pstNnieParam->astSegData[i].astDst[j].unShape.stWhc.u32Chn \
+					, pstNnieParam->astSegData[i].astDst[j].unShape.stWhc.u32Height
+					, pstNnieParam->astSegData[i].astDst[j].unShape.stWhc.u32Width);
+
             }
 		}
 	}
