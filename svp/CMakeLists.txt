@@ -1,3 +1,9 @@
+cmake_minimum_required(VERSION 3.10)
+project(aibox_sdk C CXX)
+
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 14)
+
 # ------------------------------- FLAGS -----------------------------
 SET(CMAKE_C_COMPILER aarch64-himix100-linux-gcc)
 

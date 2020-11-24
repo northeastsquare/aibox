@@ -36,8 +36,6 @@ INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE} ${HI_INCLUDE} include ../nnie_kitchen/kit
 file(GLOB SOURCES
      src/*.c
     src/*.cpp
-    cpp/CVpss.cpp
-    cpp/CVpssGrp.cpp
 )
 
 # add_library(aibox SHARED
