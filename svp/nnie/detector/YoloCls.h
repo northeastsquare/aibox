@@ -6,6 +6,7 @@
 #define _YOLO_CLS_H_
 
 #include <iostream>
+#include <string>
 #include <Net.hpp>
 #include <unordered_map>
 #include <opencv2/opencv.hpp>
@@ -15,7 +16,7 @@ class YoloCls
 
 public:
 
-    YoloCls(const AI_DETECT_ARGS_ST &st, const std::string &sModelPath);
+    YoloCls(const std::string & sModelPath, int nNetWidth, int nNetHeight, int nClassNumber, SVP_NNIE_ID_E iNnieCore);
 
     ~YoloCls();
 
@@ -29,17 +30,19 @@ public:
 
     unsigned char * mat2bgr(cv::Mat &img);
     bool m_bDebug;
+    int m_nNetWidth;
+    int m_nNetHeight;
+    int m_nClass;
+    std::string m_sDrawDir;
+    float m_fConfThresh;
+    float m_fNmsThresh;
+    bool m_bNms;
+
 private:
     int kBoxPerCell = 3;
     int feature_index0 = 0;
     int feature_index1 = 1;
     int feature_index2 = 2;
-    int m_iImageWidth;
-    int m_iImageHeight;
-    int m_nClass;
-    float m_fConfThresh;
-    float m_fNmsThresh;
-    bool m_bNms;
     const std::vector<std::vector<cv::Size2f>> anchors = {
         {{116, 90}, {156, 198}, {373, 326}},
         {{30, 61}, {62, 45}, {59, 119}},
@@ -56,8 +59,6 @@ private:
         * @return
         */
     bool validateGparams(nnie::gParams gparams);
-
-
 };
 
 

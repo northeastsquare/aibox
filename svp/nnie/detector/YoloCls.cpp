@@ -50,30 +50,33 @@ unsigned char * YoloCls::mat2bgr(cv::Mat &img){
     }
     return data;
 }
-YoloCls::YoloCls(const AI_DETECT_ARGS_ST &st, const string &sModelPath)
-:m_iImageWidth(st.image_width),
-m_iImageHeight(st.image_height),
-m_nClass(st.class_num),
-m_fConfThresh(st.conf_thresh),
-m_bNms(st.do_nms),
-m_fNmsThresh(st.nms_thresh),
-m_bDebug(0)
-{
+
+YoloCls::YoloCls(const string & sModelPath, int nNetWidth, int nNetHeight, int nClassNumber, SVP_NNIE_ID_E iNnieCore)
+:m_nNetWidth(nNetWidth),
+m_nNetHeight(nNetHeight),
+m_nClass(nClassNumber),
+m_bDebug(false){
     cout<<"62"<<endl;
-    if(sModelPath.size()==0 || m_fConfThresh<0 || m_fNmsThresh<0){
-        cerr<<"YoloCls::init, invalide params"<<endl;
+    if(sModelPath.size()==0 || nNetWidth<=0 || nNetHeight<=0 || nClassNumber<=0){
+        std::runtime_error("YoloCls::YoloCls, invalide params");
     }
+    size_t pos = sModelPath.rfind("/");
+    string sdir = sModelPath.substr(pos);
+    m_sDrawDir = sdir + "/data/model/../drawed_images/";
     cout<<"before load_model"<<endl;
-    net.load_model(sModelPath.c_str());
+    net.load_model(sModelPath.c_str(), iNnieCore);
     cout<<"68"<<endl;
 }
+
 YoloCls::~YoloCls(){}
+
+
 
 int YoloCls::detectHiVIDEO_FRAME(VIDEO_FRAME_INFO_S *pstVFrame, std::vector<nnie::objInfo> &detection_results)
 {
-    if(pstVFrame->stVFrame.u32Width != m_iImageWidth || pstVFrame->stVFrame.u32Height != m_iImageHeight){
-        cerr<<"input image size error"<<pstVFrame->stVFrame.u32Width<<"!="<<m_iImageWidth \
-                <<","<< pstVFrame->stVFrame.u32Height<<"!="<<m_iImageHeight<<endl;
+    if(pstVFrame->stVFrame.u32Width != m_nNetWidth || pstVFrame->stVFrame.u32Height != m_nNetHeight){
+        cerr<<"input image size error"<<pstVFrame->stVFrame.u32Width<<"!="<<m_nNetWidth \
+                <<","<< pstVFrame->stVFrame.u32Height<<"!="<<m_nNetHeight<<endl;
         return -1;
     }
 	struct timeval tv1;
@@ -107,8 +110,8 @@ void YoloCls::decodeResult(std::vector<nnie::objInfo> &detection_results)
     std::vector<cv::Rect> boxes;
     std::vector<float> confidences;
 
-    parseYolov3Feature(m_iImageWidth,
-                       m_iImageHeight,
+    parseYolov3Feature(m_nNetWidth,
+                       m_nNetHeight,
                        m_nClass,
                        kBoxPerCell,
                        feature_index0,
@@ -119,8 +122,8 @@ void YoloCls::decodeResult(std::vector<nnie::objInfo> &detection_results)
                        boxes,
                        confidences);
 
-    parseYolov3Feature(m_iImageWidth,
-                       m_iImageHeight,
+    parseYolov3Feature(m_nNetWidth,
+                       m_nNetHeight,
                        m_nClass,
                        kBoxPerCell,
                        feature_index1,
@@ -131,8 +134,8 @@ void YoloCls::decodeResult(std::vector<nnie::objInfo> &detection_results)
                        boxes,
                        confidences);
 
-    parseYolov3Feature(m_iImageWidth,
-                       m_iImageHeight,
+    parseYolov3Feature(m_nNetWidth,
+                       m_nNetHeight,
                        m_nClass,
                        kBoxPerCell,
                        feature_index2,
@@ -166,7 +169,7 @@ void YoloCls::decodeResult(std::vector<nnie::objInfo> &detection_results)
         cv::Rect box = boxes[idx];
 
         // remap box in src input size.
-        auto remap_box = RemapBoxOnSrc(cv::Rect2d(box), m_iImageWidth, m_iImageHeight);
+        auto remap_box = RemapBoxOnSrc(cv::Rect2d(box), m_nNetWidth, m_nNetHeight);
         nnie::objInfo object_detection;
         object_detection.box = remap_box;
         object_detection.cls_id = ids[idx] + 1;
@@ -177,10 +180,10 @@ void YoloCls::decodeResult(std::vector<nnie::objInfo> &detection_results)
         float w = object_detection.box.width;
         float h = object_detection.box.height;
         
-        object_detection.box.x = xmin/m_iImageWidth;
-        object_detection.box.y = ymin/m_iImageHeight;
-        object_detection.box.width = w/m_iImageWidth;
-        object_detection.box.height = h/m_iImageHeight;
+        object_detection.box.x = xmin/m_nNetWidth;
+        object_detection.box.y = ymin/m_nNetHeight;
+        object_detection.box.width = w/m_nNetWidth;
+        object_detection.box.height = h/m_nNetHeight;
         detection_results.push_back(std::move(object_detection));
         float confidence = object_detection.confidence;
         int cls_id = object_detection.cls_id;

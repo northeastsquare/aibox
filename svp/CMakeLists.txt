@@ -23,6 +23,7 @@ message("3d:" ${THIRD_PART})
 SET(HI_ROOT ${THIRD_PART}/hisi)
 SET(HI_INCLUDE ${HI_ROOT}/include)
 SET(HI_LIB_DIR ${HI_ROOT}/lib)
+
 # opencv
 SET(OPENCV_ROOT ${THIRD_PART}/opencv4.4)
 SET(OPENCV_INCLUDE ${OPENCV_ROOT}/include/opencv4/)
@@ -31,6 +32,7 @@ FILE(GLOB OPENCV_LIBS "${OPENCV_LIB_DIR}/*")
 message("HI_LIB_DIR:" ${OPENCV_LIB_DIR}, ${HI_LIB_DIR})
 INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE} ${HI_INCLUDE} nnie/inc nnie/detector ../de_encoder/include/)
 LINK_DIRECTORIES( ${OPENCV_LIB_DIR} ${HI_LIB_DIR})
+
 
 
 # ------------ lib ----------------

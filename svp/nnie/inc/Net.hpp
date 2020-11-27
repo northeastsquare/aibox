@@ -63,6 +63,7 @@ namespace nnie
 
     public:
         // analogous to ncnn
+        int load_model(const char *model_path, SVP_NNIE_ID_E innie_core);
         int load_model(const char *model_path);
 
         int extract(int blob_name, Mat &feat);

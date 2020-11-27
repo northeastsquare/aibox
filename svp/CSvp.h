@@ -1,11 +1,21 @@
 #include <memory>
+#include "opencv2/imgproc/types_c.h"
+#include "opencv2/core.hpp"
+#include <opencv2/opencv.hpp>
+
 #include "GeneralCls.h"
 #include "YoloCls.h"
 #include "ai_global.h"
 
-#include "opencv2/imgproc/types_c.h"
-#include "opencv2/core.hpp"
-#include <opencv2/opencv.hpp>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "aibox.h"
+
+#ifdef __cplusplus
+}
+#endif
 
 
 using namespace std;
@@ -31,7 +41,7 @@ public:
         return 0;
     }
     int Detect(const string &sModelName, VIDEO_FRAME_INFO_S *pstVFrame, vector<ST_BOX> &boxes){
-        cout<<",25,"<<endl;
+        cout<<",pstVFrame width："<<pstVFrame->stVFrame.u32Width<<",height:"<<pstVFrame->stVFrame.u32Height<<endl;
         if (m_mapInferor.find(sModelName) == m_mapInferor.end()){
             cout<<"模型"<<sModelName<<"未初始化"<<endl;
             return 103;

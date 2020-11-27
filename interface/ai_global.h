@@ -18,6 +18,7 @@ typedef struct detect_args_struct{
     
 } AI_DETECT_ARGS_ST;
 
+
 /**
  * 检测结果方框列表
  * @param x,y,w,h 方框坐标
@@ -28,7 +29,7 @@ typedef struct BOX
     int clss_id;
     float conf;
     float x,y,w,h;
-} ST_BOX;
+} BOX_ST;
 
 
 #endif

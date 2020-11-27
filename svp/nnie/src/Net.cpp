@@ -45,10 +45,17 @@ namespace nnie
         NNIE_Param_Deinit(&s_stNnieParam_, &s_stModel_);
     }
 
+    int Net::load_model(const char *model_path, SVP_NNIE_ID_E innie_core)
+    {
+        load_model(model_path);
+        stNnieCfg_.aenNnieCoreId[0] = (SVP_NNIE_ID_E)innie_core;
+        return 0;
+    }
     int Net::load_model(const char *model_path)
     {
         _load_model(model_path, &s_stModel_);
         nnie_param_init(&s_stModel_, &stNnieCfg_, &s_stNnieParam_);
+        return 0;
     }
 
     void Net::run(const char *file_path)

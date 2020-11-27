@@ -18,9 +18,13 @@ message("3d:" ${THIRD_PART})
 SET(HI_ROOT ${THIRD_PART}/hisi)
 SET(HI_INCLUDE ${HI_ROOT}/include)
 SET(HI_LIB_DIR ${HI_ROOT}/lib)
+
+# vpu
+set(HI_VPU_DIR ${THIRD_PART}/hisi_vpu)
+
 # opencv
-SET(OPENCV_ROOT ${THIRD_PART}/opencv4.4)
-SET(OPENCV_INCLUDE ${OPENCV_ROOT}/include/opencv4/)
+SET(OPENCV_ROOT ${THIRD_PART}/opencv3.4)
+SET(OPENCV_INCLUDE ${OPENCV_ROOT}/include)
 SET(OPENCV_LIB_DIR ${OPENCV_ROOT}/lib)
 #FILE(GLOB OPENCV_LIBS "${OPENCV_LIB_DIR}/*")
 #message("HI_LIB_DIR:" ${OPENCV_LIB_DIR}, ${HI_LIB_DIR})
@@ -28,7 +32,7 @@ FILE(GLOB OPENCV_LIBS "${OPENCV_LIB_DIR}/*")
 
 INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE} ${HI_INCLUDE} interface svp svp/nnie/inc svp/nnie/detector common)
 INCLUDE_DIRECTORIES(de_encoder/include )
-LINK_DIRECTORIES( ${OPENCV_LIB_DIR} ${HI_LIB_DIR})
+LINK_DIRECTORIES( ${OPENCV_LIB_DIR} ${HI_LIB_DIR} ${HI_VPU_DIR})
 
 
 # ------------ lib ----------------
@@ -41,14 +45,14 @@ SET(HI_LIBS _hiawb.a _hiae.a _hidehaze.a upvqe.a dnvqe.a md.a
 add_subdirectory(de_encoder)
 #add_library(aibox SHARED  ${KITCHEN_SRC} $<TARGET_OBJECTS:de_encoder> $<TARGET_OBJECTS:svp>)
 
-SET(SRC interface/svp_interface.cpp svp/CSvp.h svp/nnie/detector/YoloCls.cpp svp/nnie/detector/GeneralSeg.cpp
+SET(SRC interface/svp_interface.cpp svp/nnie/detector/YoloCls.cpp svp/nnie/detector/GeneralSeg.cpp
         svp/nnie/src/Net.cpp   svp/nnie/src/nnie_core.c    svp/nnie/src/sample_comm_nnie.c  svp/nnie/src/sample_comm_svp.c)
 add_library(ai_npu SHARED  ${SRC} $<TARGET_OBJECTS:de_encoder>)
 
 
 
-ADD_EXECUTABLE(test_ai_npu ${SRC} tests/test_svp_multithread.cpp)
-target_link_libraries(test_ai_npu  ai_npu
+ADD_EXECUTABLE(test_ai_npu tests/test_vpu_svp_multithread.cpp)
+target_link_libraries(test_ai_npu  ai_npu ai_vpu
         hdmi
         mpi nnie ive dnvqe upvqe VoiceEngine securec pthread
         opencv_core opencv_imgproc opencv_imgcodecs
